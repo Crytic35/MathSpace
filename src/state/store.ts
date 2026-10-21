@@ -75,6 +75,24 @@ class Store {
     this.notify();
   }
 
+  public updateLine1(update: Partial<LineEquation2D>) {
+    this.state = {
+      ...this.state,
+      activePresetId: null,
+      line1: { ...this.state.line1, ...update }
+    };
+    this.notify();
+  }
+
+  public updateLine2(update: Partial<LineEquation2D>) {
+    this.state = {
+      ...this.state,
+      activePresetId: null,
+      line2: { ...this.state.line2, ...update }
+    };
+    this.notify();
+  }
+
   public loadPreset(presetId: string) {
     const p3d = PRESETS_3D.find((p) => p.id === presetId);
     if (p3d) {

@@ -1,6 +1,22 @@
 import { store, AppState } from '../state/store.js';
 
 export function renderControlPanel(container: HTMLElement) {
+  let lastMode: '3D' | '2D' | null = null;
+
+  store.subscribe((state: AppState) => {
+    if (state.viewMode !== lastMode) {
+      lastMode = state.viewMode;
+      if (state.viewMode === '3D') {
+        render3DControls(container);
+      } else {
+        render2DControls(container);
+      }
+    }
+    syncCurrentControls(state);
+  });
+}
+
+function render3DControls(container: HTMLElement) {
   container.innerHTML = `
     <!-- Plane 1 Card -->
     <div class="card card-plane1" id="card-plane1">
@@ -12,22 +28,10 @@ export function renderControlPanel(container: HTMLElement) {
       </div>
       <div id="p1-error" style="display:none; color: var(--badge-error); font-size:0.72rem; font-weight:600;"></div>
       <div class="input-grid">
-        <div class="coeff-group">
-          <span class="coeff-label">a₁</span>
-          <input type="number" step="any" id="p1-a" class="coeff-input" />
-        </div>
-        <div class="coeff-group">
-          <span class="coeff-label">b₁</span>
-          <input type="number" step="any" id="p1-b" class="coeff-input" />
-        </div>
-        <div class="coeff-group">
-          <span class="coeff-label">c₁</span>
-          <input type="number" step="any" id="p1-c" class="coeff-input" />
-        </div>
-        <div class="coeff-group">
-          <span class="coeff-label">d₁</span>
-          <input type="number" step="any" id="p1-d" class="coeff-input" />
-        </div>
+        <div class="coeff-group"><span class="coeff-label">a₁</span><input type="number" step="any" id="p1-a" class="coeff-input" /></div>
+        <div class="coeff-group"><span class="coeff-label">b₁</span><input type="number" step="any" id="p1-b" class="coeff-input" /></div>
+        <div class="coeff-group"><span class="coeff-label">c₁</span><input type="number" step="any" id="p1-c" class="coeff-input" /></div>
+        <div class="coeff-group"><span class="coeff-label">d₁</span><input type="number" step="any" id="p1-d" class="coeff-input" /></div>
       </div>
       <div class="slider-group">
         <div class="slider-row"><span>a₁</span><input type="range" id="p1-a-slider" min="-10" max="10" step="0.1" /></div>
@@ -47,22 +51,10 @@ export function renderControlPanel(container: HTMLElement) {
       </div>
       <div id="p2-error" style="display:none; color: var(--badge-error); font-size:0.72rem; font-weight:600;"></div>
       <div class="input-grid">
-        <div class="coeff-group">
-          <span class="coeff-label">a₂</span>
-          <input type="number" step="any" id="p2-a" class="coeff-input" />
-        </div>
-        <div class="coeff-group">
-          <span class="coeff-label">b₂</span>
-          <input type="number" step="any" id="p2-b" class="coeff-input" />
-        </div>
-        <div class="coeff-group">
-          <span class="coeff-label">c₂</span>
-          <input type="number" step="any" id="p2-c" class="coeff-input" />
-        </div>
-        <div class="coeff-group">
-          <span class="coeff-label">d₂</span>
-          <input type="number" step="any" id="p2-d" class="coeff-input" />
-        </div>
+        <div class="coeff-group"><span class="coeff-label">a₂</span><input type="number" step="any" id="p2-a" class="coeff-input" /></div>
+        <div class="coeff-group"><span class="coeff-label">b₂</span><input type="number" step="any" id="p2-b" class="coeff-input" /></div>
+        <div class="coeff-group"><span class="coeff-label">c₂</span><input type="number" step="any" id="p2-c" class="coeff-input" /></div>
+        <div class="coeff-group"><span class="coeff-label">d₂</span><input type="number" step="any" id="p2-d" class="coeff-input" /></div>
       </div>
       <div class="slider-group">
         <div class="slider-row"><span>a₂</span><input type="range" id="p2-a-slider" min="-10" max="10" step="0.1" /></div>
@@ -74,9 +66,7 @@ export function renderControlPanel(container: HTMLElement) {
 
     <!-- Display Options Card -->
     <div class="card">
-      <div class="card-title-row">
-        <span>Geometric Display Options</span>
-      </div>
+      <div class="card-title-row"><span>Geometric Display Options</span></div>
       <div style="display:flex; flex-direction:column; gap:8px; font-size:0.8rem; color: var(--text-secondary);">
         <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
           <input type="checkbox" id="toggle-intersection" checked /> Show Intersection Line
@@ -88,30 +78,84 @@ export function renderControlPanel(container: HTMLElement) {
     </div>
   `;
 
-  bindPlaneControls('p1', (update) => store.updatePlane1(update));
-  bindPlaneControls('p2', (update) => store.updatePlane2(update));
+  bindPlaneControls('p1', (u) => store.updatePlane1(u));
+  bindPlaneControls('p2', (u) => store.updatePlane2(u));
 
-  // Display toggles
   const lineToggle = document.getElementById('toggle-intersection') as HTMLInputElement;
   if (lineToggle) {
-    lineToggle.addEventListener('change', () => {
-      store.setState({ showIntersection: lineToggle.checked });
-    });
+    lineToggle.addEventListener('change', () => store.setState({ showIntersection: lineToggle.checked }));
   }
 
   const normalsToggle = document.getElementById('toggle-normals') as HTMLInputElement;
   if (normalsToggle) {
-    normalsToggle.addEventListener('change', () => {
-      store.setState({ showNormals: normalsToggle.checked });
-    });
+    normalsToggle.addEventListener('change', () => store.setState({ showNormals: normalsToggle.checked }));
   }
+}
 
-  // Subscribe to sync UI
-  store.subscribe((state: AppState) => {
-    syncPlaneUI('p1', state.plane1);
-    syncPlaneUI('p2', state.plane2);
-    if (lineToggle) lineToggle.checked = state.showIntersection;
-    if (normalsToggle) normalsToggle.checked = state.showNormals;
+function render2DControls(container: HTMLElement) {
+  container.innerHTML = `
+    <!-- Line 1 Card -->
+    <div class="card card-plane1">
+      <div class="card-title-row">
+        <span style="color: var(--plane1-color)">Line 1: a₁x + b₁y = c₁</span>
+      </div>
+      <div class="input-grid" style="grid-template-columns: repeat(3, 1fr);">
+        <div class="coeff-group"><span class="coeff-label">a₁</span><input type="number" step="any" id="l1-a" class="coeff-input" /></div>
+        <div class="coeff-group"><span class="coeff-label">b₁</span><input type="number" step="any" id="l1-b" class="coeff-input" /></div>
+        <div class="coeff-group"><span class="coeff-label">c₁</span><input type="number" step="any" id="l1-c" class="coeff-input" /></div>
+      </div>
+      <div class="slider-group">
+        <div class="slider-row"><span>a₁</span><input type="range" id="l1-a-slider" min="-10" max="10" step="0.1" /></div>
+        <div class="slider-row"><span>b₁</span><input type="range" id="l1-b-slider" min="-10" max="10" step="0.1" /></div>
+        <div class="slider-row"><span>c₁</span><input type="range" id="l1-c-slider" min="-10" max="10" step="0.1" /></div>
+      </div>
+    </div>
+
+    <!-- Line 2 Card -->
+    <div class="card card-plane2">
+      <div class="card-title-row">
+        <span style="color: var(--plane2-color)">Line 2: a₂x + b₂y = c₂</span>
+      </div>
+      <div class="input-grid" style="grid-template-columns: repeat(3, 1fr);">
+        <div class="coeff-group"><span class="coeff-label">a₂</span><input type="number" step="any" id="l2-a" class="coeff-input" /></div>
+        <div class="coeff-group"><span class="coeff-label">b₂</span><input type="number" step="any" id="l2-b" class="coeff-input" /></div>
+        <div class="coeff-group"><span class="coeff-label">c₂</span><input type="number" step="any" id="l2-c" class="coeff-input" /></div>
+      </div>
+      <div class="slider-group">
+        <div class="slider-row"><span>a₂</span><input type="range" id="l2-a-slider" min="-10" max="10" step="0.1" /></div>
+        <div class="slider-row"><span>b₂</span><input type="range" id="l2-b-slider" min="-10" max="10" step="0.1" /></div>
+        <div class="slider-row"><span>c₂</span><input type="range" id="l2-c-slider" min="-10" max="10" step="0.1" /></div>
+      </div>
+    </div>
+  `;
+
+  bindLineControls('l1', (u) => store.updateLine1(u));
+  bindLineControls('l2', (u) => store.updateLine2(u));
+}
+
+function bindLineControls(
+  prefix: 'l1' | 'l2',
+  onUpdate: (update: { a?: number; b?: number; c?: number }) => void
+) {
+  const fields = ['a', 'b', 'c'] as const;
+  fields.forEach((field) => {
+    const numInput = document.getElementById(`${prefix}-${field}`) as HTMLInputElement;
+    const slider = document.getElementById(`${prefix}-${field}-slider`) as HTMLInputElement;
+
+    if (numInput && slider) {
+      numInput.addEventListener('input', () => {
+        const val = parseFloat(numInput.value);
+        if (!isNaN(val)) {
+          onUpdate({ [field]: val });
+          if (val >= -10 && val <= 10) slider.value = val.toString();
+        }
+      });
+      slider.addEventListener('input', () => {
+        const val = parseFloat(slider.value);
+        numInput.value = val.toString();
+        onUpdate({ [field]: val });
+      });
+    }
   });
 }
 
@@ -129,24 +173,22 @@ function bindPlaneControls(
       numInput.addEventListener('input', () => {
         const val = parseFloat(numInput.value);
         if (isNaN(val)) {
-          showError(prefix, `Field ${field} must be a valid number.`);
+          showError(prefix, `Field ${field} must be a number.`);
           onUpdate({ valid: false });
           return;
         }
 
-        // Validate plane normal not zero
         const state = store.getState();
         const current = prefix === 'p1' ? state.plane1 : state.plane2;
         const candidate = { ...current, [field]: val };
         if (candidate.a === 0 && candidate.b === 0 && candidate.c === 0) {
-          showError(prefix, 'Degenerate normal: a, b, c cannot all be 0.');
+          showError(prefix, 'Normal cannot be zero vector (0, 0, 0).');
           onUpdate({ [field]: val, valid: false });
         } else {
           hideError(prefix);
           onUpdate({ [field]: val, valid: true });
         }
 
-        // Unclamped slider sync: adjust slider within [-10, 10] bounds without altering input value
         if (val >= -10 && val <= 10) {
           slider.value = val.toString();
         }
@@ -160,7 +202,7 @@ function bindPlaneControls(
         const current = prefix === 'p1' ? state.plane1 : state.plane2;
         const candidate = { ...current, [field]: val };
         if (candidate.a === 0 && candidate.b === 0 && candidate.c === 0) {
-          showError(prefix, 'Degenerate normal: a, b, c cannot all be 0.');
+          showError(prefix, 'Normal cannot be zero vector (0, 0, 0).');
           onUpdate({ [field]: val, valid: false });
         } else {
           hideError(prefix);
@@ -172,40 +214,52 @@ function bindPlaneControls(
 
   const vis = document.getElementById(`${prefix}-visible`) as HTMLInputElement;
   if (vis) {
-    vis.addEventListener('change', () => {
-      onUpdate({ visible: vis.checked });
-    });
+    vis.addEventListener('change', () => onUpdate({ visible: vis.checked }));
   }
 }
 
-function syncPlaneUI(
-  prefix: 'p1' | 'p2',
-  plane: { a: number; b: number; c: number; d: number; visible: boolean; valid: boolean }
-) {
+function syncCurrentControls(state: AppState) {
+  if (state.viewMode === '3D') {
+    syncPlaneUI('p1', state.plane1);
+    syncPlaneUI('p2', state.plane2);
+    const lineToggle = document.getElementById('toggle-intersection') as HTMLInputElement;
+    if (lineToggle && document.activeElement !== lineToggle) lineToggle.checked = state.showIntersection;
+    const normalsToggle = document.getElementById('toggle-normals') as HTMLInputElement;
+    if (normalsToggle && document.activeElement !== normalsToggle) normalsToggle.checked = state.showNormals;
+  } else {
+    syncLineUI('l1', state.line1);
+    syncLineUI('l2', state.line2);
+  }
+}
+
+function syncPlaneUI(prefix: 'p1' | 'p2', plane: { a: number; b: number; c: number; d: number; visible: boolean; valid: boolean }) {
   const fields = ['a', 'b', 'c', 'd'] as const;
   fields.forEach((f) => {
     const numInput = document.getElementById(`${prefix}-${f}`) as HTMLInputElement;
     const slider = document.getElementById(`${prefix}-${f}-slider`) as HTMLInputElement;
-
-    if (numInput && document.activeElement !== numInput) {
-      numInput.value = plane[f].toString();
-    }
+    if (numInput && document.activeElement !== numInput) numInput.value = plane[f].toString();
     if (slider && document.activeElement !== slider) {
       const v = plane[f];
-      if (v >= -10 && v <= 10) {
-        slider.value = v.toString();
-      }
+      if (v >= -10 && v <= 10) slider.value = v.toString();
     }
   });
 
   const vis = document.getElementById(`${prefix}-visible`) as HTMLInputElement;
-  if (vis && document.activeElement !== vis) {
-    vis.checked = plane.visible;
-  }
+  if (vis && document.activeElement !== vis) vis.checked = plane.visible;
+  if (plane.valid) hideError(prefix);
+}
 
-  if (plane.valid) {
-    hideError(prefix);
-  }
+function syncLineUI(prefix: 'l1' | 'l2', line: { a: number; b: number; c: number }) {
+  const fields = ['a', 'b', 'c'] as const;
+  fields.forEach((f) => {
+    const numInput = document.getElementById(`${prefix}-${f}`) as HTMLInputElement;
+    const slider = document.getElementById(`${prefix}-${f}-slider`) as HTMLInputElement;
+    if (numInput && document.activeElement !== numInput) numInput.value = line[f].toString();
+    if (slider && document.activeElement !== slider) {
+      const v = line[f];
+      if (v >= -10 && v <= 10) slider.value = v.toString();
+    }
+  });
 }
 
 function showError(prefix: 'p1' | 'p2', msg: string) {

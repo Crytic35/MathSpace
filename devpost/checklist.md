@@ -9,7 +9,7 @@ Build mode: fast
 
 ## Slices
 
-- [ ] **1. Project scaffolding and mathematical engine with full test suite**
+- [x] **1. Project scaffolding and mathematical engine with full test suite**
   Becomes usable: The pure mathematical analytical engine (`src/math/`) and Vitest test suite running and passing tests for vector operations, scale-aware plane classification, intersection line calculation ($\mathbf{d} = \mathbf{n}_1 \times \mathbf{n}_2$, point $\mathbf{p}_0$ via max minor), bounded cube polygon clipping, and 2D linear systems.
   Why now: Risk first and kernel first. Proves the core analytical mathematics, clipping algorithms, and numerical tolerances with automated tests before connecting to 3D rendering and UI.
   PRD ref: `prd.md > Features and Behavior > 2 & 6`
@@ -19,7 +19,7 @@ Build mode: fast
   Learner check: Run `npx vitest run` to observe that all vector operations, plane classifications, and clipping algorithms pass.
   Commit: `Initialize project and build mathematical engine with full test suite`
 
-- [ ] **2. Three-panel scientific workspace and interactive 3D viewport with presets**
+- [x] **2. Three-panel scientific workspace and interactive 3D viewport with presets**
   Becomes usable: A running local web application with the responsive 3-panel layout, Three.js 3D viewport rendering the bounded coordinate cube $[-10, 10]^3$ with labeled axes, translucent clipped plane meshes, illuminated intersection line, orbit controls, camera toolbar (Isometric, Top, Front, Side, Reset), and preset loading.
   Why now: Brings the 3D visualization to life end-to-end, validating the WebGL coordinate system and bounded clipping.
   PRD ref: `prd.md > The Core Journey` (steps 1, 2, 4), `prd.md > Features and Behavior > 3 & 5`
@@ -29,7 +29,7 @@ Build mode: fast
   Learner check: Open `http://localhost:5173`, rotate/zoom the 3D scene, and test camera preset buttons.
   Commit: `Build three-panel workspace and interactive 3D viewport`
 
-- [ ] **3. Equation controls, synchronized sliders, and KaTeX derivation panel**
+- [x] **3. Equation controls, synchronized sliders, and KaTeX derivation panel**
   Becomes usable: Live interactive parameter manipulation: dragging sliders or typing coefficients dynamically updates 3D planes and the intersection line in real time, while the right panel displays KaTeX mathematical steps, direction vector cross product, particular point derivation, and algebraic verification.
   Why now: Closes the flagship interaction loop ("Define → Compute → Derive & Verify → Visualize → Tweak Sliders").
   PRD ref: `prd.md > The Core Journey` (step 3), `prd.md > Features and Behavior > 1, 2, 4`
@@ -51,7 +51,7 @@ Build mode: fast
 
 ## Hands-on Checkpoints
 
-- [ ] Early usable behavior explored — Slice 2 (3D viewport with presets running locally)
+- [x] Early usable behavior explored — Slice 2 (3D viewport with presets running locally)
 - [ ] Final kick-the-tires exploration and feedback completed — Slice 4 (Complete app and 2D bridge)
 
 ## Final Review
