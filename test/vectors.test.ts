@@ -4,7 +4,6 @@ import {
   cross3,
   norm3,
   normalize3,
-  approxEqual,
   vectorsApproxEqual3
 } from '../src/math/vectors.js';
 

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MathSpace — Interactive 2D & 3D Mathematics Visualizer</title>
+    <link rel="stylesheet" href="/node_modules/katex/dist/katex.min.css" />
+    <link rel="stylesheet" href="/src/ui/styles/tokens.css" />
+    <link rel="stylesheet" href="/src/ui/styles/layout.css" />
+  </head>
+  <body data-theme="dark">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <span class="brand-title">MathSpace</span>
+        <span class="brand-badge">Analytical Geometry</span>
+      </div>
+
+      <div class="header-controls">
+        <div class="mode-switcher">
+          <button id="btn-mode-3d" class="mode-btn active">3D Planes</button>
+          <button id="btn-mode-2d" class="mode-btn">2D Linear System</button>
+        </div>
+
+        <select id="preset-selector" class="preset-select" title="Load a curated mathematical preset">
+          <!-- Populated dynamically -->
+        </select>
+
+        <button id="btn-theme-toggle" class="btn-icon" title="Toggle Dark/Light Theme">
+          <span id="theme-icon">☀️</span>
+          <span id="theme-text">Light</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Workspace -->
+    <main class="workspace">
+      <!-- Left Panel: Controls -->
+      <aside class="panel panel-left">
+        <div class="panel-header">
+          <span>Equations & Controls</span>
+        </div>
+        <div id="controls-content" class="panel-content">
+          <!-- Populated dynamically by ControlPanel -->
+        </div>
+      </aside>
+
+      <!-- Center Viewport -->
+      <section id="viewport-container" class="viewport-container">
+        <div id="viewport-3d-wrapper" style="width: 100%; height: 100%;"></div>
+        <canvas id="viewport-2d-canvas" class="hidden"></canvas>
+      </section>
+
+      <!-- Right Panel: Derivation -->
+      <aside class="panel panel-right">
+        <div class="panel-header">
+          <span>Derivation & Verification</span>
+        </div>
+        <div id="derivation-content" class="panel-content">
+          <!-- Populated dynamically by DerivationPanel -->
+        </div>
+      </aside>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

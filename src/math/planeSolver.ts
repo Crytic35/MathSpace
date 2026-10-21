@@ -137,26 +137,22 @@ export function solvePlaneIntersection(
   const absDyz = Math.abs(Dyz);
 
   let p0: Vector3;
-  let minorUsed = 'D_{xy}';
   let pointDerivationLatex = '';
 
   if (absDxy >= absDxz && absDxy >= absDyz) {
     // Set z = 0, solve for x and y
-    minorUsed = 'D_{xy} (\\text{setting } z_0 = 0)';
     const x0 = (p1.d * p2.b - p2.d * p1.b) / Dxy;
     const y0 = (p1.a * p2.d - p2.a * p1.d) / Dxy;
     p0 = [x0, y0, 0];
     pointDerivationLatex = `\\text{Using largest minor } D_{xy} = ${formatNum(Dxy)} \\neq 0 \\text{ with } z_0 = 0: x_0 = ${formatNum(x0)}, \\; y_0 = ${formatNum(y0)}`;
   } else if (absDxz >= absDxy && absDxz >= absDyz) {
     // Set y = 0, solve for x and z
-    minorUsed = 'D_{xz} (\\text{setting } y_0 = 0)';
     const x0 = (p1.d * p2.c - p2.d * p1.c) / Dxz;
     const z0 = (p1.a * p2.d - p2.a * p1.d) / Dxz;
     p0 = [x0, 0, z0];
     pointDerivationLatex = `\\text{Using largest minor } D_{xz} = ${formatNum(Dxz)} \\neq 0 \\text{ with } y_0 = 0: x_0 = ${formatNum(x0)}, \\; z_0 = ${formatNum(z0)}`;
   } else {
     // Set x = 0, solve for y and z
-    minorUsed = 'D_{yz} (\\text{setting } x_0 = 0)';
     const y0 = (p1.d * p2.c - p2.d * p1.c) / Dyz;
     const z0 = (p1.b * p2.d - p2.b * p1.d) / Dyz;
     p0 = [0, y0, z0];
