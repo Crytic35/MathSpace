@@ -2,13 +2,21 @@ import { store, AppState } from './state/store.js';
 import { PRESETS_3D, PRESETS_2D } from './state/presets.js';
 import { Viewport3D } from './viewport/viewport3d.js';
 import { renderCameraToolbar } from './ui/cameraToolbar.js';
+import { renderControlPanel } from './ui/controlPanel.js';
+import { renderDerivationPanel } from './ui/derivationPanel.js';
 import { solvePlaneIntersection } from './math/planeSolver.js';
 
 let viewport3d: Viewport3D | null = null;
 
 function init() {
   const container3d = document.getElementById('viewport-3d-wrapper');
+  const controlsContent = document.getElementById('controls-content');
+  const derivationContent = document.getElementById('derivation-content');
   if (!container3d) return;
+
+  // Initialize UI panels
+  if (controlsContent) renderControlPanel(controlsContent);
+  if (derivationContent) renderDerivationPanel(derivationContent);
 
   // Initialize Three.js Viewport
   viewport3d = new Viewport3D(container3d);
