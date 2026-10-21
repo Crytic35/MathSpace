@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MathSpace — App Map & Architecture Reference</title>
+  <style>
+    :root {
+      --bg: #0F172A;
+      --card-bg: #1E293B;
+      --border: #334155;
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
+      --cyan: #22D3EE;
+      --amber: #F59E0B;
+      --gold: #FDE047;
+      --code-bg: #0B1120;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 32px 20px;
+    }
+    h1, h2, h3 { color: var(--text); margin-top: 28px; }
+    h1 { font-size: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+    h2 { font-size: 1.4rem; color: var(--cyan); }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      margin: 16px 0;
+    }
+    code {
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+      background: var(--code-bg);
+      color: var(--gold);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px;
+      overflow-x: auto;
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+      color: var(--text);
+    }
+    .diagram-container {
+      text-align: center;
+      margin: 24px 0;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+    }
+    svg { max-width: 100%; height: auto; }
+    details {
+      margin: 10px 0;
+      padding: 12px;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+    summary {
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--cyan);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>MathSpace — App Map & Architecture Reference</h1>
+  <p>A take-home architectural guide to the MathSpace codebase: how data flows from user input through the analytical math engine and into real-time WebGL and Canvas2D visualization.</p>
+
+  <h2>1. Data Flow Architecture</h2>
+  <div class="diagram-container">
+    <svg viewBox="0 0 760 170" width="100%" height="170" xmlns="http://www.w3.org/2000/svg">
+      <!-- Input -->
+      <rect x="20" y="55" width="160" height="60" rx="8" fill="#1E293B" stroke="#22D3EE" stroke-width="2"/>
+      <text x="100" y="80" fill="#F8FAFC" font-size="13" font-weight="bold" text-anchor="middle">Equation Controls</text>
+      <text x="100" y="100" fill="#94A3B8" font-size="11" text-anchor="middle">Sliders & Inputs</text>
+
+      <path d="M 180 85 L 230 85" stroke="#94A3B8" stroke-width="2" marker-end="url(#arrow)"/>
+
+      <!-- Math Engine -->
+      <rect x="240" y="40" width="220" height="90" rx="8" fill="#1E293B" stroke="#FDE047" stroke-width="2"/>
+      <text x="350" y="65" fill="#F8FAFC" font-size="13" font-weight="bold" text-anchor="middle">MathEngine (Pure TS)</text>
+      <text x="350" y="85" fill="#94A3B8" font-size="11" text-anchor="middle">Normalized Cross / Distances</text>
+      <text x="350" y="105" fill="#94A3B8" font-size="11" text-anchor="middle">Max Minor Point & Clipper</text>
+
+      <path d="M 460 70 L 510 50" stroke="#94A3B8" stroke-width="2" marker-end="url(#arrow)"/>
+      <path d="M 460 100 L 510 120" stroke="#94A3B8" stroke-width="2" marker-end="url(#arrow)"/>
+
+      <!-- Viewport -->
+      <rect x="520" y="20" width="220" height="60" rx="8" fill="#1E293B" stroke="#22D3EE" stroke-width="2"/>
+      <text x="630" y="45" fill="#F8FAFC" font-size="13" font-weight="bold" text-anchor="middle">Viewport3D / 2D</text>
+      <text x="630" y="65" fill="#94A3B8" font-size="11" text-anchor="middle">Three.js WebGL / Canvas</text>
+
+      <!-- Derivation -->
+      <rect x="520" y="95" width="220" height="60" rx="8" fill="#1E293B" stroke="#F59E0B" stroke-width="2"/>
+      <text x="630" y="120" fill="#F8FAFC" font-size="13" font-weight="bold" text-anchor="middle">Derivation Panel</text>
+      <text x="630" y="140" fill="#94A3B8" font-size="11" text-anchor="middle">KaTeX Steps & Verification</text>
+
+      <!-- Defs -->
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 8 5 L 0 9 z" fill="#94A3B8"/>
+        </marker>
+      </defs>
+    </svg>
+  </div>
+
+  <h2>2. Three Key Code Locations</h2>
+  <div class="card">
+    <h3>Stop 1: The Analytical Solver</h3>
+    <p><code>src/math/planeSolver.ts &rarr; solvePlaneIntersection()</code></p>
+    <p>Computes normal vector cross products, checks scale-aware collinearity (<code>&sigma; &le; 10⁻⁷</code>), performs normalized-distance coincidence testing, and selects the maximum absolute 2x2 minor determinant to condition the particular point <code>p₀</code>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Stop 2: The Bounded Polygon Clipper</h3>
+    <p><code>src/math/planeClipper.ts &rarr; clipPlaneToCube()</code></p>
+    <p>Intersects the infinite mathematical plane against the 12 segments of the coordinate box <code>[-10, 10]³</code>, deduplicates coincident vertices, and orders vertices angularly around the normal vector to form a convex polygon for Three.js rendering.</p>
+  </div>
+
+  <div class="card">
+    <h3>Stop 3: Three.js Viewport & Depth Blending</h3>
+    <p><code>src/viewport/viewport3d.ts &rarr; updatePlanes() and updateIntersectionLine()</code></p>
+    <p>Updates vertex buffers dynamically without disposing materials. Uses <code>depthWrite: false</code> with double-sided transparent materials so overlapping planes remain legible from any viewing angle.</p>
+  </div>
+
+  <h2>3. To Change This, Start Here</h2>
+  <ul>
+    <li><strong>Add a new 3D or 2D Preset:</strong> Edit <code>src/state/presets.ts</code>. The dropdown automatically populates and configures the camera and equation values.</li>
+    <li><strong>Adjust Coordinate Boundaries:</strong> Change <code>bound = 10</code> in <code>src/math/planeClipper.ts</code> and <code>src/viewport/viewport3d.ts</code>.</li>
+    <li><strong>Customize Styling & Colors:</strong> Edit CSS custom properties in <code>src/ui/styles/tokens.css</code>.</li>
+  </ul>
+
+  <h2>4. A Practice to Reuse</h2>
+  <div class="card" style="border-left: 4px solid var(--cyan);">
+    <p><strong>Decouple Mathematical Computation from Graphics Rendering:</strong></p>
+    <p>By keeping <code>src/math/</code> 100% free of DOM, Three.js, and Canvas dependencies, all numerical algorithms, floating-point tolerances, and singular edge cases were verified with 21 automated unit tests running in under 500ms using Vitest before any rendering code was wired.</p>
+  </div>
+
+  <h2>5. How to Run</h2>
+  <pre><code># Start the development server
+npm run dev
+
+# Run the test suite
+npm run test
+
+# Build production bundle
+npm run build</code></pre>
+
+</body>
+</html>

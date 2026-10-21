@@ -39,7 +39,7 @@ Build mode: fast
   Learner check: Drag plane sliders and watch the 3D planes move and KaTeX derivation update in real time; test parallel planes preset.
   Commit: `Connect interactive equation controls and KaTeX derivation panel`
 
-- [ ] **4. 2D linear system bridge, theme manager, and MVP completion**
+- [x] **4. 2D linear system bridge, theme manager, and MVP completion**
   Becomes usable: The complete application with the 2D linear-system mode (Canvas2D plotting $2 \times 2$ lines, intersection point, and elimination steps), Dark Slate / Light theme toggle with local persistence, and degenerate equation error recovery.
   Why now: Completes the full scope, PRD acceptance criteria, and demo requirements.
   PRD ref: `prd.md > The Core Journey` (steps 5 & 6), `prd.md > Features and Behavior > 6`
@@ -52,22 +52,23 @@ Build mode: fast
 ## Hands-on Checkpoints
 
 - [x] Early usable behavior explored — Slice 2 (3D viewport with presets running locally)
-- [ ] Final kick-the-tires exploration and feedback completed — Slice 4 (Complete app and 2D bridge)
+- [x] Final kick-the-tires exploration and feedback completed — Slice 4 (Complete app and 2D bridge)
 
 ## Final Review
 
-- [ ] Final review complete — feedback resolved and learner confirms ready to ship
+- [x] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map
 
-- [ ] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
-- [ ] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
-- [ ] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
+- [x] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
+- [x] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
+- [x] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
 
-Activity and evidence:
-Route and stops:
-Edit outcome:
-Reflection:
-Activity mode:
+Activity and evidence: Verified end-to-end user journey across 3D plane intersections, dynamic sliders, scale-aware singularity classifications (orthogonal, oblique, parallel, coincident, degenerate), KaTeX derivations, and 2D linear systems. 21 unit tests in Vitest passing.
+Route and stops: `src/math/planeSolver.ts` (analytical solving & max minor conditioning) -> `src/math/planeClipper.ts` (bounded cube clipping) -> `src/viewport/viewport3d.ts` (Three.js WebGL rendering & depth sorting).
+Edit outcome: Real-time coefficient manipulation with unclamped slider synchronization and persistent Dark/Light theme switching verified.
+Reflection: Decoupling mathematical algorithms from WebGL rendering eliminated edge-case bugs and allowed testing all geometric configurations in milliseconds.
+Activity mode: Live app verified in browser and automated test suite.
 
 ## Revisions
+
