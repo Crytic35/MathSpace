@@ -1,0 +1,23 @@
+{
+  "name": "mathspace",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "katex": "^0.16.11",
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "@types/katex": "^0.16.7",
+    "@types/three": "^0.170.0",
+    "typescript": "^5.6.3",
+    "vite": "^6.0.1",
+    "vitest": "^2.1.8"
+  }
+}
